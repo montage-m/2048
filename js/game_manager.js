@@ -80,6 +80,7 @@ GameManager.prototype.restart = function () {
 GameManager.prototype.keepPlaying = function () {
   this.keepPlaying = true;
   this.actuator.continueGame(); // Clear the game won/lost message
+  this.actuate();
 };
 
 // Return true if the game is lost, or has won and the user hasn't kept playing
@@ -149,7 +150,8 @@ GameManager.prototype.actuate = function () {
     over:       this.over,
     won:        this.won,
     bestScore:  this.storageManager.getBestScore(),
-    terminated: this.isGameTerminated()
+    terminated: this.isGameTerminated(),
+    keepPlaying:this.keepPlaying// add keepPlaying for edge case
   });
 
 };

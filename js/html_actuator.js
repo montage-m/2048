@@ -26,6 +26,12 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
 
     if (metadata.terminated) {
       if (metadata.over) {
+        //edge case
+        if (metadata.won && !metadata.keepPlaying){
+            // last move won , and no more move ;
+            self.message(true);
+            return;
+        }
         self.message(false); // You lose
       } else if (metadata.won) {
         self.message(true); // You win!
