@@ -11,7 +11,63 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
 
   this.setup();
+  this.enableTileClick();
 }
+
+GameManager.prototype.enableTileClick = function(){
+    var that = this;
+
+    function getIndex(ele){
+       return  [].slice.call(ele.parentNode.children).indexOf(ele);
+
+    }
+
+
+
+    document.querySelector(".container").addEventListener("click", function(e){
+        console.log('cliking...');
+        var innerReg = /^tile-inner/;
+        var tileReg = /tile-position-(\d+)-(\d+)/;
+        var cellReg = /^grid-cell/;
+        var valueReg = /tile-(\d+)/;
+
+
+
+
+        if(e.target && innerReg.test(e.target.className)){
+            var ele = e.target.parentNode;
+            var posMatch = tileReg.exec(ele.className);
+            var valueMatch = valueReg.exec(ele.className);
+            console.log('tile   Y: ' + posMatch[1] + '  X:' + posMatch[2] + ' value:' + valueMatch[1] );
+
+            var posX = posMatch[2]-1;
+            var posY = posMatch[1]-1;
+            var value = valueMatch[1] * 2; // double the value
+            // the x and y definition is reverted in actuator !
+            var tile = new Tile({x:posY, y: posX}, value);
+            //simple insert the tile
+            that.grid.insertTile(tile);
+
+            that.actuate();
+
+
+            return  false;
+        }
+        if(e.target && /^grid-cell/.test(e.target.className)){
+            var ele = e.target;
+            console.log('empty cell click :' + getIndex(ele.parentNode) + '   --    ' + getIndex(ele));
+
+            var value = Math.random() < 0.9 ? 2 : 4;
+            var tile = new Tile({y: getIndex(ele.parentNode), x:getIndex(ele)}, value);
+
+            that.grid.insertTile(tile);
+            that.actuate();
+
+
+            return false;
+        }
+    });
+};
 
 // Restart the game
 GameManager.prototype.restart = function () {
